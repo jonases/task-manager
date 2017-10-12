@@ -4,6 +4,7 @@ go:
 notifications:
   email: false
 script:
+  - go run webapp.go
   - curl https://localhost
 
 
