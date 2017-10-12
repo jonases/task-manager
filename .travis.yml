@@ -3,7 +3,9 @@ go:
   - 1.9
 notifications:
   email: false
+
 sudo: true
+
 script:
   - go run webapp.go
   - curl https://localhost
