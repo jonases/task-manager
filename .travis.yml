@@ -7,7 +7,7 @@ notifications:
 sudo: true
 
 script:
-  - go run webapp.go
+  - sudo go run webapp.go
   - curl https://localhost
 
 
