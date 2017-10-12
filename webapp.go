@@ -22,7 +22,7 @@ func root(w http.ResponseWriter, req *http.Request) {
 func main() {
 	http.HandleFunc("/", root)
 	http.HandleFunc("/hello", HelloServer)
-	err := http.ListenAndServeTLS(":443", "server.crt", "server.key", nil)
+	err := http.ListenAndServeTLS(":8080", "server.crt", "server.key", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
