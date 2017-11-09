@@ -1,13 +1,18 @@
 language: go
+
 go:
   - 1.9
+
 notifications:
   email: false
 
 sudo: true
 
+install:
+  - go get github.com/GoASTScanner/gas
+
 script:
-  - go run webapp.go
-  - curl https://localhost:8080
+  - gas src/webapp.go
+ 
 
 
