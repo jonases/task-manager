@@ -10,9 +10,9 @@ import (
 
 func HelloServer(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte("This is an example server.\n"))
-	//dec, err := w.Write([]byte("This is an example server.\n"))
-	//fmt.Printf("Dec: %d, err: %s", dec, err)
+	//w.Write([]byte("This is an example server.\n"))
+	dec, err := w.Write([]byte("This is an example server.\n"))
+	fmt.Printf("Dec: %d, err: %s", dec, err)
 	// fmt.Fprintf(w, "This is an example server.\n")
 	// io.WriteString(w, "This is an example server.\n")
 }
