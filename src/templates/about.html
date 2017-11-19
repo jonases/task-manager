@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  {{template "header" .}}
+
+  <body>
+
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          {{template "mainmenu" .}}
+          <main role="main" class="inner cover">
+            <h1 class="cover-heading">This is the about page.</h1>
+            
+              <a href="/contact" class="btn btn-lg btn-secondary">About us</a>
+            </p>
+          </main>
+
+          {{template "footer"}}
+
+        </div>
+
+      </div>
+
+    </div>
+    {{template "bottom_js"}}
+   
+  </body>
+</html>

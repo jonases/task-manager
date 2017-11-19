@@ -12,7 +12,7 @@ install:
   - go get github.com/GoASTScanner/gas
 
 script:
-  - gas src/webapp.go
+  - gas src/main.go
  
 
 
