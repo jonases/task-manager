@@ -12,5 +12,5 @@ install:
   - go get github.com/GoASTScanner/gas
 
 script:
-  - export GOPATH=$GOPATH:$HOME/gopath/src/github.com/jonases/cybersecuryproject
+  - export GOPATH=$HOME/gopath/src/github.com/jonases/cybersecuryproject:$GOPATH
   - cd src && gas main.go models/* handlers/*
