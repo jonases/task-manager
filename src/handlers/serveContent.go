@@ -17,7 +17,7 @@ func ServeContent(res http.ResponseWriter, req *http.Request) {
 	log.Println("urlParams:", urlParams)
 	pageAlias := urlParams["pageAlias"]
 	//log.Println("pageAlias: ", pageAlias)
-	if pageAlias == "" {
+	if pageAlias == "" || pageAlias == "home" {
 		pageAlias = "index"
 	}
 
@@ -32,10 +32,11 @@ func ServeContent(res http.ResponseWriter, req *http.Request) {
 	}
 
 	context := createContext(pageAlias)
-	//context.Title = pageAlias
-	//ontext.Section = pageAlias
 
-	staticPage.Execute(res, context)
+	err := staticPage.Execute(res, context)
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func populateStaticPages() *template.Template {
@@ -45,9 +46,16 @@ func populateStaticPages() *template.Template {
 	templatePaths := new([]string)
 
 	basePath := models.TemplatesPath
-	templateFolder, _ := os.Open(basePath)
+	templateFolder, err := os.Open(basePath)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	defer templateFolder.Close()
-	templatePathsRaw, _ := templateFolder.Readdir(0)
+	templatePathsRaw, err := templateFolder.Readdir(0)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	for _, pathInfo := range templatePathsRaw {
 		log.Println(pathInfo.Name())
 		*templatePaths = append(*templatePaths, basePath+"/"+pathInfo.Name())
@@ -55,21 +63,31 @@ func populateStaticPages() *template.Template {
 	}
 
 	basePath = models.StaticHTML
-	templateFolder, _ = os.Open(basePath)
+	templateFolder, err = os.Open(basePath)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	defer templateFolder.Close()
-	templatePathsRaw, _ = templateFolder.Readdir(0)
+	templatePathsRaw, err = templateFolder.Readdir(0)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	for _, pathInfo := range templatePathsRaw {
 		log.Println(pathInfo.Name())
 		*templatePaths = append(*templatePaths, basePath+"/"+pathInfo.Name())
 
 	}
 
-	tmpl, _ = tmpl.ParseFiles(*templatePaths...)
+	tmpl, err = tmpl.ParseFiles(*templatePaths...)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	return tmpl
 }
 
 func createContext(page string) (context models.Context) {
-	//var context models.Context
+	log.Println("Invoking createContext")
+
 	switch {
 	case page == "index":
 		context.Title = "Home"
@@ -79,6 +97,9 @@ func createContext(page string) (context models.Context) {
 		context.Section = page
 	case page == "contact":
 		context.Title = "Contact"
+		context.Section = page
+	default:
+		context.Title = page
 		context.Section = page
 	}
 

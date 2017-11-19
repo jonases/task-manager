@@ -8,13 +8,9 @@ notifications:
 
 sudo: true
 
-
 install:
   - go get github.com/GoASTScanner/gas
 
 script:
   - export GOPATH=$GOPATH:$HOME/gopath/src/github.com/jonases/cybersecuryproject
-  - gas src/main.go
- 
-
-
+  - cd src && gas main.go models/* handlers/*

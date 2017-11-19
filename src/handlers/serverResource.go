@@ -38,5 +38,8 @@ func ServeResource(res http.ResponseWriter, req *http.Request) {
 	defer file.Close()
 	res.Header().Add("Content-Type", contentType)
 	buff := bufio.NewReader(file)
-	buff.WriteTo(res)
+	_, err = buff.WriteTo(res)
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
