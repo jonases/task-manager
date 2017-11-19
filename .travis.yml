@@ -8,6 +8,9 @@ notifications:
 
 sudo: true
 
+env:
+  - GOPATH=$GOPATH:$HOME/gopath/src/github.com/jonases/cybersecuryproject
+
 install:
   - go get github.com/GoASTScanner/gas
 
