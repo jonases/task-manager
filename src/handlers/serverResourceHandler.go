@@ -3,6 +3,7 @@ package handlers
 import (
 	"bufio"
 	"log"
+	"models"
 	"net/http"
 	"os"
 	"strings"
@@ -10,14 +11,14 @@ import (
 
 // ServeResource retrieves and serves the static pages such as .js and .css files
 func ServeResource(res http.ResponseWriter, req *http.Request) {
-	log.Println("Invoking serveResource")
+	//log.Println("Invoking serveResource")
+
+	// return method not allowed if attempt to use a method different than GET
 	if req.Method != http.MethodGet {
 		res.WriteHeader(http.StatusMethodNotAllowed)
-		return
 	}
 
-	path := "static" + req.URL.Path
-	log.Println("PATH:", path)
+	path := models.Public + "static" + req.URL.Path
 
 	var contentType string
 
@@ -31,14 +32,17 @@ func ServeResource(res http.ResponseWriter, req *http.Request) {
 
 	file, err := os.Open(path)
 	if err != nil {
-		log.Println("Extension Not Found:", path)
+		log.Println(err)
 		res.WriteHeader(http.StatusNotFound)
 		return
 	}
 	defer file.Close()
+
 	res.Header().Add("Content-Type", contentType)
+
 	buff := bufio.NewReader(file)
 	_, err = buff.WriteTo(res)
+
 	if err != nil {
 		log.Fatalln(err)
 	}

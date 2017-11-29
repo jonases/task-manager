@@ -13,4 +13,4 @@ install:
 
 script:
   - export GOPATH=$HOME/gopath/src/github.com/jonases/cybersecuryproject:$GOPATH
-  - cd src && gas main.go models/* handlers/*
+  - cd src && gas main.go models/* handlers/* db/* utils/*

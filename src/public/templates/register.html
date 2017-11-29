@@ -1,0 +1,140 @@
+{{template "header" .}}
+
+  <body>
+      <div class="container">
+
+          {{template "mainmenu" .}}
+          <main role="main">
+            <h1 class="cover-heading">Registration Form</h1>
+            
+                <div id="flash-container">
+                    {{range $fm := .flashes}}
+                        <div id="flash-message" class="alert alert-dismissible fade show {{.Class}}" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            {{.Message}}
+                        </div>
+                    {{end}}
+                </div>
+
+                <div>
+                  <form role="form" method="post">
+                    <div class="form-group">
+                      <label for="name">First Name</label>
+                        <div><input type="text" class="form-control" id="first_name" name="first_name" maxlength="48" placeholder="First Name" value="{{.first_name}}" required/></div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="name">Last Name</label>
+                        <div><input type="text" class="form-control" id="last_name" name="last_name" maxlength="48" placeholder="Last Name" value="{{.last_name}}" required/></div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="email">Email</label>
+                        <div><input type="email" class="form-control" id="email" name="email" maxlength="48" placeholder="Email"  value="{{.email}}"  required/></div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="control-label" for="name">Password</label>
+                      
+                        <div class="form-inline row" id="pwd">
+                          <div class="form-group col-sm-6" id="pwd_first">
+                            <input type="password" class="form-control" id="password" name="password" maxlength="32" placeholder="Password" value="{{.password}}" required/>
+                          </div>
+                          <div class="form-group col-sm-6" id="pwd_verify">
+                              <input type="password" class="form-control error" id="password_verify" name="password_verify" maxlength="32" placeholder="Verify Password" value="{{.password}}" required/>
+                              
+                          </div>
+                          
+                          <div class="col-sm-8 col-sm-offset-2" style="padding-top: 30px;">
+                              <div class="pwstrength_viewport_progress"></div>
+                          </div>
+                        </div>
+                    </div>
+                  
+                  <div class="form-group">
+                      <input type="submit" id="submit" value="Register" class="btn btn-primary" />
+                    </div>
+                    <input type="hidden" name="token" value="{{.token}}">
+                  </form>
+                </div>
+          </main>
+          {{template "footer"}}
+        </div>
+
+        {{template "js"}}
+    <script type="text/javascript" src="js/pwstrength.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            "use strict";
+            var count = 0;
+            var options = {};
+            options.ui = {
+                container: "#pwd",
+                showVerdictsInsideProgressBar: true,
+                viewports: {
+                    progress: ".pwstrength_viewport_progress"
+                }
+            };
+            options.common = {
+                onLoad: function () {
+                    // disables the "Register" button
+                    $('input[type="submit"], button').disable(true);
+                },
+                onScore: function (options, word, totalScoreCalculated) {
+                    // get in here only once
+                    if (count === 0) {
+                        $('#pwd_first').append('<i id="pwd_info"><small style="color:red;">*Must have a strong password</small></i>');
+                        $('#pwd_verify').append('<i id="info_pwd"><small style="color:red;">*Passwords do not match</small></i>');
+                        $('#password_verify').css('border-color', 'red');
+                        $('#password_verify').css('border-width', '2.9px');
+                        $('#password_verify').css('border-style', 'groove');
+                        $('#password').css('border-color', 'red');
+                        $('#password').css('border-width', '2.9px');
+                        $('#password').css('border-style', 'groove');
+                        count++;
+                    }
+                    // password is of length 8 and is a strong password
+                    if (word.length >= 8 && totalScoreCalculated > options.ui.scores[3]) {
+                        $('#password').css('border-color', '');
+                        $('#password').css('border-width', '');
+                        $('#password').css('border-style', '');
+                        $('#pwd_info').remove();
+                    }
+                    // Fall back to the score that was calculated by the rules engine.
+                    // Must pass back the score to set the total score variable.
+                    return totalScoreCalculated;
+                }
+            };
+            options.rules = {
+                activated: {
+                    wordTwoCharacterClasses: true,
+                    wordRepetitions: true,
+                }
+            };
+            $('#password').pwstrength(options);
+
+            // check whether the password put in "Verify Password" is the same as "Password"
+            $("#password_verify").keyup(function(event) {
+              if ($('#password').val() === $('#password_verify').val()) {
+                  $('#password_verify').css('border-color', '');
+                  $('#password_verify').css('border-width', '');
+                  $('#password_verify').css('border-style', '');
+                  $('#info_pwd').remove();
+                  $('input[type="submit"], button').disable(false);
+                  count = 0;
+              }
+            });
+        });
+        
+        jQuery.fn.extend({
+            disable: function(state) {
+                return this.each(function() {
+                    this.disabled = state;
+                });
+            }
+        });
+  </script>
+  </body>
+</html>

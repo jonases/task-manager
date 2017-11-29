@@ -1,17 +1,10 @@
-<!doctype html>
-<html lang="en">
-  {{template "header" .}}
+{{template "header" .}}
 
   <body>
-
-    <div class="site-wrapper">
-
-      <div class="site-wrapper-inner">
-
-        <div class="cover-container">
+        <div class="container">
 
           {{template "mainmenu" .}}
-          <main role="main" class="inner cover">
+          <main role="main">
             <h1 class="cover-heading">This is the about page.</h1>
             
               <a href="/contact" class="btn btn-lg btn-secondary">About us</a>
@@ -22,10 +15,7 @@
 
         </div>
 
-      </div>
-
-    </div>
-    {{template "bottom_js"}}
+    {{template "js"}}
    
   </body>
 </html>

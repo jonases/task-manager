@@ -1,0 +1,33 @@
+{{template "header" .}}
+
+  <body>
+        <div class="container">
+          {{template "mainmenu" .}}
+          <div class="row">
+              <div class="col-md-12">
+                  <h4>List of messages</h4>
+                  <div class="table-responsive">
+                      <table id="mytable" class="table table-bordred table-striped">
+                          <thead>
+                              <th>Name</th>
+                              <th>Email</th>
+                              <th>Message</th>
+                          </thead>
+                      <tbody>
+                      {{range $msgs := .messages}}
+                          <tr>
+                              <td>{{.Name}}</td>
+                              <td>{{.Email}}</td>
+                              <td>{{.Message}}</td>
+                          </tr>
+                      {{end}}
+                      </tbody>
+                      </table>
+              </div>
+              </div>
+          </div>
+          {{template "footer"}}
+        </div>
+    {{template "js"}}
+  </body>
+</html>
