@@ -30,9 +30,11 @@ func main() {
 			HttpOnly: true,
 		},
 	}
-	// need to register structures to be used in the sessions
+
+	// allow serializing maps in securecookie
+	// http://golang.org/pkg/encoding/gob/#Register
+	// need to register structure to be used in the sessions
 	gob.Register(utils.Flash{})
-	gob.Register([]models.MsgData{})
 
 	// Configures the session cookie store
 	utils.Configure(*session)

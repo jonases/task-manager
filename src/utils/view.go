@@ -1,18 +1,10 @@
 package utils
 
 import (
-	"encoding/gob"
 	"models"
 	"net/http"
 	"net/url"
 )
-
-func init() {
-	// Magic goes here to allow serializing maps in securecookie
-	// http://golang.org/pkg/encoding/gob/#Register
-	// Source: http://stackoverflow.com/questions/21934730/gob-type-not-registered-for-interface-mapstringinterface
-	gob.Register(Flash{})
-}
 
 var (
 	// FlashError is a bootstrap class
