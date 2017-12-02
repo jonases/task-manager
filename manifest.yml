@@ -1,0 +1,10 @@
+applications:
+- path: .
+  memory: 128M
+  instances: 1
+  domain: mybluemix.net
+  name: jonas-nci-cs-project
+  host: nciproject
+  disk_quota: 1024M
+  command: bin/nciproject
+buildpack: https://github.com/cloudfoundry/go-buildpack.git

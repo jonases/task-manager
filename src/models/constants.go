@@ -13,3 +13,7 @@ const (
 	UsersDB    = "users"
 	MessagesDB = "messages"
 )
+
+var (
+	Path = ""
+)

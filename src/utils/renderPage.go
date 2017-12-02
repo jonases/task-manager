@@ -72,11 +72,23 @@ func RenderPage(res http.ResponseWriter, req *http.Request, list ...string) {
 // PopulateStaticPages finds all HTML pages in the given directory
 func PopulateStaticPages() *template.Template {
 	//log.Println("Invoking populateStaticPages")
+	/*
+		// find full path of the current executable including the file name
+		ex, e := os.Executable()
+		if e != nil {
+			log.Println(e)
+			os.Exit(1)
+		}
 
+		// returns the path, excluding the file name
+		exPath := filepath.Dir(ex)
+	*/
 	tmpl := template.New("templates")
 	templatePaths := new([]string)
 
-	basePath := models.Public + models.TemplatesPath
+	//basePath := exPath + "/../src/" + models.Public + models.TemplatesPath
+	basePath := models.Path + models.Public + models.TemplatesPath
+	//log.Println(basePath)
 	templateFolder, err := os.Open(basePath)
 	if err != nil {
 		log.Fatalln(err)

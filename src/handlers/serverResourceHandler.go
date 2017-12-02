@@ -18,7 +18,7 @@ func ServeResource(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusMethodNotAllowed)
 	}
 
-	path := models.Public + "static" + req.URL.Path
+	path := models.Path + models.Public + "static" + req.URL.Path
 
 	var contentType string
 
