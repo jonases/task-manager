@@ -16,14 +16,17 @@ var (
 
 // Session stores session level information
 type Session struct {
-	Options   sessions.Options `json:"Options"`   // Pulled from: http://www.gorillatoolkit.org/pkg/sessions#Options
-	Name      string           `json:"Name"`      // Name for: http://www.gorillatoolkit.org/pkg/sessions#CookieStore.Get
-	SecretKey string           `json:"SecretKey"` // Key for: http://www.gorillatoolkit.org/pkg/sessions#CookieStore.New
+	Options sessions.Options `json:"options"` // http://www.gorillatoolkit.org/pkg/sessions#Options
+	Name    string           `json:"name"`    // http://www.gorillatoolkit.org/pkg/sessions#CookieStore.Get
+	// used to authenticate values using HMAC
+	HashKey []byte `json:"hashkey"` // http://www.gorillatoolkit.org/pkg/securecookie#New
+	// used to encrypt values
+	BlockKey []byte `json:"blockkey"` // http://www.gorillatoolkit.org/pkg/securecookie#New
 }
 
 // Configure configures the session cookie store
 func Configure(s Session) {
-	Store = sessions.NewCookieStore([]byte(s.SecretKey))
+	Store = sessions.NewCookieStore(s.HashKey, s.BlockKey)
 	Store.Options = &s.Options
 	Name = s.Name
 }
@@ -32,7 +35,7 @@ func Configure(s Session) {
 func NewSession(r *http.Request) *sessions.Session {
 	session, err := Store.Get(r, Name)
 	if err != nil {
-		log.Println("session already exist:", err.Error())
+		log.Println(err)
 	}
 	return session
 }

@@ -12,10 +12,11 @@ import (
 // ServeContent retrieves and serves the HTML pages
 func ServeContent(res http.ResponseWriter, req *http.Request) {
 	//log.Println("Invoking serveContent")
+	session := utils.NewSession(req)
 
 	if req.URL.EscapedPath() == "/logout" {
 		// Get session
-		session := utils.NewSession(req)
+		//session := utils.NewSession(req)
 
 		// if user is authenticated
 		if session.Values["email"] != nil {
@@ -34,9 +35,9 @@ func ServeContent(res http.ResponseWriter, req *http.Request) {
 	}
 
 	if req.URL.EscapedPath() == "/login" {
-		session := utils.NewSession(req)
+		//session := utils.NewSession(req)
 
-		// if user is authenticated, do not allow to access "/login" endpoint
+		// if user is authenticated, do not allow access to "/login" endpoint
 		if session.Values["email"] != nil {
 			http.Redirect(res, req, "/", http.StatusFound)
 			return
@@ -44,8 +45,8 @@ func ServeContent(res http.ResponseWriter, req *http.Request) {
 	}
 
 	if req.URL.EscapedPath() == "/messages" {
-		session := utils.NewSession(req)
-		// if user is not authenticated, do not allow to access "/messages" endpoint
+		//session := utils.NewSession(req)
+		// if user is not authenticated, do not allow access to "/messages" endpoint
 		if session.Values["email"] == nil {
 			http.Redirect(res, req, "/", http.StatusFound)
 			return
@@ -66,9 +67,9 @@ func ServeContent(res http.ResponseWriter, req *http.Request) {
 		for k := range db.Alldocs.Rows {
 			doc := db.Alldocs.Rows[k]
 
-			msg.Email = doc["doc"].(map[string]interface{})["email"].(string)
+			msg.Email = html.UnescapeString(doc["doc"].(map[string]interface{})["email"].(string))
 			msg.Message = html.UnescapeString(doc["doc"].(map[string]interface{})["msg"].(string))
-			msg.Name = doc["doc"].(map[string]interface{})["name"].(string)
+			msg.Name = html.UnescapeString(doc["doc"].(map[string]interface{})["name"].(string))
 			msgSlice = append(msgSlice, msg)
 		}
 

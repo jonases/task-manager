@@ -15,8 +15,10 @@ func Register(res http.ResponseWriter, req *http.Request) {
 
 	// creates connection to "users" document
 	db.CreateDBConnection(models.UsersDB)
+	email := html.EscapeString(req.FormValue("email"))
+	password := html.EscapeString(req.FormValue("password"))
 	// query by email address
-	result := db.Query("email", html.EscapeString(req.FormValue("email")))
+	result := db.Query("email", email)
 
 	// deny registering if email is found in the db
 	if len(result) > 0 {
@@ -42,8 +44,8 @@ func Register(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// check whether passwords match
-	if html.EscapeString(req.FormValue("password")) != html.EscapeString(req.FormValue("password_verify")) {
-		log.Println("Passwords don't match. Email:", req.FormValue("email"))
+	if password != html.EscapeString(req.FormValue("password_verify")) {
+		log.Println("Passwords don't match. Email:", email)
 		res.WriteHeader(http.StatusBadRequest)
 		res.Write([]byte("Passwords dont match"))
 		return
@@ -52,14 +54,14 @@ func Register(res http.ResponseWriter, req *http.Request) {
 	var user models.UserDB
 	var err error
 
-	user.Email = html.EscapeString(req.FormValue("email"))
+	user.Email = email
 	// bcrypt hash password
-	user.Password, err = utils.HashString(req.FormValue("password"))
+	user.Password, err = utils.HashString(password)
 	if err != nil {
 		log.Println(err)
 	}
-	user.FirstName = req.FormValue("first_name")
-	user.LastName = req.FormValue("last_name")
+	user.FirstName = html.EscapeString(req.FormValue("first_name"))
+	user.LastName = html.EscapeString(req.FormValue("last_name"))
 	user.AccountActive = true
 
 	// creates user in "users" document
@@ -68,6 +70,7 @@ func Register(res http.ResponseWriter, req *http.Request) {
 		http.Error(res, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+
 	session := utils.NewSession(req)
 	session.AddFlash(utils.Flash{Message: "User " + req.FormValue("email") + " successfully registered", Class: utils.FlashSuccess})
 	err = session.Save(req, res)

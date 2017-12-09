@@ -1,7 +1,6 @@
 package main
 
 import (
-	"db"
 	"encoding/gob"
 	"handlers"
 	"log"
@@ -12,18 +11,24 @@ import (
 	"time"
 	"utils"
 
+	"db"
+
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/josephspurrier/csrfbanana"
 )
 
 func main() {
 
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds | log.Lshortfile)
 
-	// setup session settings
+	// cookie store settings
 	session := &utils.Session{
-		SecretKey: "K1fuGi8xsXihxiDbxiL4z2A80",
-		Name:      models.CookieName,
+		// authenticate the cookie value using HMAC
+		HashKey: []byte("F564O4sK16j8eEybQt2ht6DLehxuV4iHioUBsUwSpDU=vUjHATXHn8T89lX3Cg1"),
+		// encryption key to encrypt the cookie using AES-256
+		BlockKey: []byte("oQGCK9HFaQYAAJrmukcKclXN8WCL+yTs"),
+		Name:     models.CookieName,
 		Options: sessions.Options{
 			Path:     "/",
 			Domain:   "",
@@ -35,8 +40,9 @@ func main() {
 
 	// allow serializing maps in securecookie
 	// http://golang.org/pkg/encoding/gob/#Register
-	// need to register structure to be used in the sessions
+	// need to register structure that are used in the cookie sessions, so that we can attach them to each session
 	gob.Register(utils.Flash{})
+	gob.Register(csrfbanana.StringMap{})
 
 	// Configures the session cookie store
 	utils.Configure(*session)
@@ -53,7 +59,6 @@ func main() {
 
 	// returns the path, excluding the file name
 	models.Path = filepath.Dir(ex) + "/src/"
-	log.Println(models.Path)
 
 	// set up the routes for the HTTP handle
 	router := mux.NewRouter()
@@ -69,8 +74,17 @@ func main() {
 
 	http.Handle("/", router)
 
+	csrfProtection := csrfbanana.New(http.DefaultServeMux, utils.Store, utils.Name)
+	// Generate a new token after each success/failure (also prevents double submits)
+	csrfProtection.ClearAfterUsage(true)
+	csrfProtection.FailureHandler(http.HandlerFunc(handlers.InvalidToken))
+
+	//csrfProtection := csrf.Protect([]byte("o6GPX9HFaSYwnJrmukcSclX=8WCL+y_s"), csrf.Secure(false), csrf.FieldName("token"))(http.DefaultServeMux)
+	//csrfProtection := csrf.Protect(session.BlockKey, csrf.Secure(false), csrf.FieldName("token"), csrf.CookieName(session.Name))(http.DefaultServeMux)
+
 	srv := &http.Server{
-		Handler:      nil,
+		//		Handler: nil,
+		Handler:      csrfProtection,
 		Addr:         ":8001",
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,

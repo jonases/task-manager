@@ -44,7 +44,7 @@ func Login(res http.ResponseWriter, req *http.Request) {
 				utils.Empty(session)
 				session.Values["email"] = email
 				session.Values["fname"] = r["fname"].(string)
-				session.AddFlash(utils.Flash{Message: "Welcome, " + session.Values["fname"].(string), Class: utils.FlashSuccess})
+				session.AddFlash(utils.Flash{Message: "Welcome, " + html.UnescapeString(session.Values["fname"].(string)), Class: utils.FlashSuccess})
 				err := session.Save(req, res)
 				if err != nil {
 					log.Println(err)

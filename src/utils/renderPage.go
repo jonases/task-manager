@@ -18,6 +18,7 @@ func RenderPage(res http.ResponseWriter, req *http.Request, list ...string) {
 	// create a view
 	v := NewView(req)
 	// creates a token to protect against CSRF
+	//v.Vars["token"] = csrf.Token(req)
 	v.Vars["token"] = csrfbanana.Token(res, req, sess)
 
 	if len(list) > 0 {
@@ -31,14 +32,15 @@ func RenderPage(res http.ResponseWriter, req *http.Request, list ...string) {
 			switch f.(type) {
 			case Flash:
 				v.Vars["flashes"].([]Flash)[i] = f.(Flash)
-			default:
-				v.Vars["flashes"].([]Flash)[i] = Flash{f.(string), "alert-box"}
+				//default:
+				//	v.Vars["flashes"].([]Flash)[i] = Flash{f.(string), "alert-box"}
 			}
 
 		}
-		err := sess.Save(v.request, res)
+		//err := sess.Save(v.request, res)
+		err := sess.Save(req, res)
 		if err != nil {
-			log.Println(err.Error())
+			log.Println(err)
 			http.Error(res, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		}
 	}

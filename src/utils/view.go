@@ -22,8 +22,8 @@ var (
 
 // View attributes
 type View struct {
-	Vars    map[string]interface{}
-	request *http.Request
+	Vars map[string]interface{}
+	//request *http.Request
 	Title   string
 	Section string
 }
@@ -38,14 +38,16 @@ type Flash struct {
 func NewView(req *http.Request) *View {
 	v := &View{}
 	v.Vars = make(map[string]interface{})
+
+	// set auth level to annonymous by default
 	v.Vars["AuthLevel"] = "anon"
 
 	// This is required for the view to access the request
-	v.request = req
+	//v.request = req
 
-	req.Cookie("")
+	//req.Cookie("")
 	// Get session
-	sess := NewSession(v.request)
+	sess := NewSession(req)
 
 	// used to populate the messages table in "/messages" endpoint
 	if sess.Values["messages"] != nil {
