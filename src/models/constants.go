@@ -5,6 +5,9 @@ const (
 	StaticHTML    = "html"
 	Public        = "public/"
 	CookieName    = "sessionid"
+)
+
+var (
 
 	/*
 		DB "Tables" (correct term I belive is Document as it is a NoSQL database)
@@ -12,8 +15,6 @@ const (
 
 	UsersDB    = "users"
 	MessagesDB = "messages"
-)
 
-var (
 	Path = ""
 )

@@ -22,30 +22,8 @@ func main() {
 
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds | log.Lshortfile)
 
-	// cookie store settings
-	session := &utils.Session{
-		// authenticate the cookie value using HMAC
-		HashKey: []byte("F564O4sK16j8eEybQt2ht6DLehxuV4iHioUBsUwSpDU=vUjHATXHn8T89lX3Cg1"),
-		// encryption key to encrypt the cookie using AES-256
-		BlockKey: []byte("oQGCK9HFaQYAAJrmukcKclXN8WCL+yTs"),
-		Name:     models.CookieName,
-		Options: sessions.Options{
-			Path:     "/",
-			Domain:   "",
-			MaxAge:   86400,
-			Secure:   false,
-			HttpOnly: true,
-		},
-	}
-
-	// allow serializing maps in securecookie
-	// http://golang.org/pkg/encoding/gob/#Register
-	// need to register structure that are used in the cookie sessions, so that we can attach them to each session
-	gob.Register(utils.Flash{})
-	gob.Register(csrfbanana.StringMap{})
-
-	// Configures the session cookie store
-	utils.Configure(*session)
+	// initializes the cookie session store
+	initSessionStore()
 
 	// creates a client to be used to connect to the Cloudant database
 	db.CloudantInit()
@@ -74,16 +52,14 @@ func main() {
 
 	http.Handle("/", router)
 
+	// Set up the CSRF protection mechanism
 	csrfProtection := csrfbanana.New(http.DefaultServeMux, utils.Store, utils.Name)
 	// Generate a new token after each success/failure (also prevents double submits)
 	csrfProtection.ClearAfterUsage(true)
+	// Set a specific handler when an nvalid token is received
 	csrfProtection.FailureHandler(http.HandlerFunc(handlers.InvalidToken))
 
-	//csrfProtection := csrf.Protect([]byte("o6GPX9HFaSYwnJrmukcSclX=8WCL+y_s"), csrf.Secure(false), csrf.FieldName("token"))(http.DefaultServeMux)
-	//csrfProtection := csrf.Protect(session.BlockKey, csrf.Secure(false), csrf.FieldName("token"), csrf.CookieName(session.Name))(http.DefaultServeMux)
-
 	srv := &http.Server{
-		//		Handler: nil,
 		Handler:      csrfProtection,
 		Addr:         ":8001",
 		WriteTimeout: 15 * time.Second,
@@ -93,4 +69,31 @@ func main() {
 	// start the HTTP server
 	log.Fatal(srv.ListenAndServe())
 
+}
+
+func initSessionStore() {
+	// cookie store settings
+	session := &utils.Session{
+		// authenticate the cookie value using HMAC
+		HashKey: []byte("F564O4sK16j8eEybQt2ht6DLehxuV4iHioUBsUwSpDU=vUjHATXHn8T89lX3Cg1"),
+		// encryption key to encrypt the cookie using AES-256
+		BlockKey: []byte("oQGCK9HFaQYAAJrmukcKclXN8WCL+yTs"),
+		Name:     models.CookieName,
+		Options: sessions.Options{
+			Path:     "/",
+			Domain:   "",
+			MaxAge:   86400,
+			Secure:   false,
+			HttpOnly: true,
+		},
+	}
+
+	// allow serializing maps in securecookie
+	// http://golang.org/pkg/encoding/gob/#Register
+	// need to register structure that are used in the cookie sessions, so that we can attach them to each session
+	gob.Register(utils.Flash{})
+	gob.Register(csrfbanana.StringMap{})
+
+	// Configures the session cookie store
+	utils.Configure(*session)
 }

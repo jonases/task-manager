@@ -60,7 +60,6 @@ func RenderPage(res http.ResponseWriter, req *http.Request, list ...string) {
 		log.Println("Page Not Found:", path)
 		staticPage = staticPages.Lookup("404.html")
 		res.WriteHeader(http.StatusNotFound)
-		return
 	}
 
 	v.Vars["Section"], v.Vars["Title"] = CreateContext(path)
