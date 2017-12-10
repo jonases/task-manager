@@ -62,23 +62,13 @@ func TestGetMessages(t *testing.T) {
 	Get(t, "/messages", handlers.ServeContent, http.StatusOK, "")
 }
 
-/*
-// find the CSRF token by analysing the HTML page returned
-func getElementByName(name string, n *html.Node) (element *html.Node, ok bool) {
-	for _, a := range n.Attr {
-		if a.Key == "name" && a.Val == name {
-			return n, true
-		}
-	}
+func TestCleanUpDB(t *testing.T) {
+	db.DeleteDocument(db.MsgsDoc.ID, db.MsgsDoc.Rev)
+	db.CreateDBConnection(models.UsersDB)
+	db.DeleteDocument(db.UsersDoc.ID, db.UsersDoc.Rev)
 
-	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		if element, ok = getElementByName(name, c); ok {
-			return
-		}
-	}
-	return
 }
-*/
+
 // Get defines the GET requests, expecting the desired HTTP code and body
 func Get(t *testing.T, url string, hFunc http.HandlerFunc, expectedStatus int, expectedBody string) {
 
@@ -87,13 +77,9 @@ func Get(t *testing.T, url string, hFunc http.HandlerFunc, expectedStatus int, e
 	if err != nil {
 		t.Fatal(err)
 	}
+	// set cookie header if it exists
 	if cookie != nil {
-		//log.Println("COOKIE: ", cookie)
-		//var cookieConv interface{}
-		//cookieConv = cookie
-
 		req.AddCookie(cookie)
-		//req.Header.Set("Set-Cookie", cookieConv.(string))
 	}
 
 	// create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response
@@ -104,32 +90,6 @@ func Get(t *testing.T, url string, hFunc http.HandlerFunc, expectedStatus int, e
 	// directly and pass in Request and ResponseRecorder
 	handler.ServeHTTP(rr, req)
 
-	// if url == "/login" {
-	// 	result := rr.Result()
-	// 	cookies := result.Cookies()
-	// 	cookie = cookies[0]
-	// }
-
-	/*
-		// need to grab the CSRF token to use in the subsequent POST request
-		if url == "/contact" || url == "/login" || url == "/register" {
-			body, err := html.Parse(rr.Body)
-			if err != nil {
-				t.Fatal(err)
-			}
-			element, ok := getElementByName("token", body)
-			if !ok {
-				t.Fatal("element not found")
-			}
-			for _, a := range element.Attr {
-				if a.Key == "value" {
-					//fmt.Println(a.Val)
-					token = a.Val
-					//return
-				}
-			}
-		}
-	*/
 	// Check the status code is what's expected
 	if status := rr.Code; status != expectedStatus {
 		t.Errorf("handler returned wrong status code: got %v, want %v",

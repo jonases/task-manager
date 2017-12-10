@@ -10,9 +10,11 @@ import (
 )
 
 var (
-	Alldocs models.AlldocsResult
-	DB      *cloudant.DB
-	Client  *cloudant.Client
+	Alldocs  models.AlldocsResult
+	DB       *cloudant.DB
+	Client   *cloudant.Client
+	UsersDoc models.UsersDocument
+	MsgsDoc  models.MsgDocument
 )
 
 // CloudantInit creates a client connection with the cloudant database
@@ -74,10 +76,29 @@ func Query(field string, value string) []interface{} {
 
 // CreateDocument creates a document in the cloudant database
 func CreateDocument(data interface{}) error {
-	_, _, err := DB.CreateDocument(data)
+	id, rev, err := DB.CreateDocument(data)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
+
+	if DB.Name() == "users" || DB.Name() == "users_test" {
+		log.Println("Its users DB: ", DB.Name())
+		UsersDoc.Rev = rev
+		UsersDoc.ID = id
+	} else {
+		log.Println("Its NOT users DB: ", DB.Name())
+		MsgsDoc.Rev = rev
+		MsgsDoc.ID = id
+	}
+
 	return nil
+}
+
+// DeleteDocument deletes a doc from the db
+func DeleteDocument(id, rev string) {
+	_, err := DB.Delete(id, rev)
+	if err != nil {
+		log.Println(err)
+	}
 }

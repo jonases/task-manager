@@ -15,8 +15,6 @@ func ServeContent(res http.ResponseWriter, req *http.Request) {
 	session := utils.NewSession(req)
 
 	if req.URL.EscapedPath() == "/logout" {
-		// Get session
-		//session := utils.NewSession(req)
 
 		// if user is authenticated
 		if session.Values["email"] != nil {
@@ -35,7 +33,6 @@ func ServeContent(res http.ResponseWriter, req *http.Request) {
 	}
 
 	if req.URL.EscapedPath() == "/login" {
-		//session := utils.NewSession(req)
 
 		// if user is authenticated, do not allow access to "/login" endpoint
 		if session.Values["email"] != nil {
@@ -45,7 +42,7 @@ func ServeContent(res http.ResponseWriter, req *http.Request) {
 	}
 
 	if req.URL.EscapedPath() == "/messages" {
-		//session := utils.NewSession(req)
+
 		// if user is not authenticated, do not allow access to "/messages" endpoint
 		if session.Values["email"] == nil {
 			http.Redirect(res, req, "/", http.StatusFound)

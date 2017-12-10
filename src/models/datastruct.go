@@ -35,3 +35,13 @@ type Query struct {
 	Limit    int                    `json:"limit,omitempty"`
 	Skip     int                    `json:"skip,omitempty"`
 }
+
+type MsgDocument struct {
+	Rev string `json:"rev"`
+	ID  string `json:"id"`
+}
+
+type UsersDocument struct {
+	Rev string `json:"rev"`
+	ID  string `json:"id"`
+}
