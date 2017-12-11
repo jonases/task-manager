@@ -19,9 +19,10 @@ func RenderPage(res http.ResponseWriter, req *http.Request, list ...string) {
 	// create a view
 	v := NewView(req)
 	// creates a token to protect against CSRF
-	//v.Vars["token"] = csrf.Token(req)
 	v.Vars["token"] = csrfbanana.Token(res, req, sess)
 
+	// send back the attributes sent from the client. eg. Email, First Name
+	// it repopulates the form fields if the validation did not pass
 	if len(list) > 0 {
 		Repopulate(list, req.Form, v.Vars)
 	}
@@ -30,15 +31,8 @@ func RenderPage(res http.ResponseWriter, req *http.Request, list ...string) {
 	if flashes := sess.Flashes(); len(flashes) > 0 {
 		v.Vars["flashes"] = make([]Flash, len(flashes))
 		for i, f := range flashes {
-			switch f.(type) {
-			case Flash:
-				v.Vars["flashes"].([]Flash)[i] = f.(Flash)
-				//default:
-				//	v.Vars["flashes"].([]Flash)[i] = Flash{f.(string), "alert-box"}
-			}
-
+			v.Vars["flashes"].([]Flash)[i] = f.(Flash)
 		}
-		//err := sess.Save(v.request, res)
 		err := sess.Save(req, res)
 		if err != nil {
 			log.Println(err)
@@ -74,23 +68,12 @@ func RenderPage(res http.ResponseWriter, req *http.Request, list ...string) {
 // PopulateStaticPages finds all HTML pages in the given directory
 func PopulateStaticPages() *template.Template {
 	//log.Println("Invoking populateStaticPages")
-	/*
-		// find full path of the current executable including the file name
-		ex, e := os.Executable()
-		if e != nil {
-			log.Println(e)
-			os.Exit(1)
-		}
 
-		// returns the path, excluding the file name
-		exPath := filepath.Dir(ex)
-	*/
 	tmpl := template.New("templates")
 	templatePaths := new([]string)
 
-	//basePath := exPath + "/../src/" + models.Public + models.TemplatesPath
 	basePath := models.Path + models.Public + models.TemplatesPath
-	//log.Println(basePath)
+
 	templateFolder, err := os.Open(basePath)
 	if err != nil {
 		log.Fatalln(err)

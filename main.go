@@ -36,7 +36,7 @@ func main() {
 	}
 
 	// returns the path, excluding the file name
-	models.Path = filepath.Dir(ex) + "/src/"
+	models.Path = filepath.Dir(ex) + "/"
 
 	// set up the routes for the HTTP handle
 	router := mux.NewRouter()
