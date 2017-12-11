@@ -2,16 +2,16 @@ package main
 
 import (
 	"encoding/gob"
-	"handlers"
 	"log"
-	"models"
 	"net/http"
 	"os"
 	"path/filepath"
 	"time"
-	"utils"
 
-	"db"
+	"github.com/jonases/cybersecuryproject/db"
+	"github.com/jonases/cybersecuryproject/handlers"
+	"github.com/jonases/cybersecuryproject/models"
+	"github.com/jonases/cybersecuryproject/utils"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
