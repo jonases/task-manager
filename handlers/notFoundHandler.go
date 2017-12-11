@@ -2,7 +2,8 @@ package handlers
 
 import (
 	"net/http"
-	"utils"
+
+	"github.com/jonases/cybersecuryproject/utils"
 )
 
 // NotFound handler returns the pre-defined 404 page together with 404 HTTP status

@@ -1,9 +1,10 @@
 package utils
 
 import (
-	"models"
 	"net/http"
 	"net/url"
+
+	"github.com/jonases/cybersecuryproject/models"
 )
 
 var (

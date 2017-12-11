@@ -2,8 +2,8 @@ package db
 
 import (
 	"log"
-	"models"
-	"os"
+
+	"github.com/jonases/cybersecuryproject/models"
 
 	cloudant "github.com/IBM-Bluemix/go-cloudant"
 	couchdb "github.com/timjacobi/go-couchdb"
@@ -20,8 +20,10 @@ var (
 // CloudantInit creates a client connection with the cloudant database
 func CloudantInit() {
 
-	user := os.Getenv("CLOUDANT_USER_NAME")
-	password := os.Getenv("CLOUDANT_PASSWORD")
+	//user := os.Getenv("CLOUDANT_USER_NAME")
+	//password := os.Getenv("CLOUDANT_PASSWORD")
+	user := "dceeabcd-763a-42cd-8350-1bc0cb886fef-bluemix"
+	password := "e292c370fb51e6d5d466c8394051716d7a73224d0d844a9f53eaf174a279b527"
 
 	var err error
 	// create the client

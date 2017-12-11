@@ -3,10 +3,11 @@ package handlers
 import (
 	"bufio"
 	"log"
-	"models"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/jonases/cybersecuryproject/models"
 )
 
 // ServeResource retrieves and serves the static pages such as .js and .css files

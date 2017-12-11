@@ -3,9 +3,10 @@ package utils
 import (
 	"html/template"
 	"log"
-	"models"
 	"net/http"
 	"os"
+
+	"github.com/jonases/cybersecuryproject/models"
 
 	"github.com/josephspurrier/csrfbanana"
 )

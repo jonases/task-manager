@@ -1,13 +1,14 @@
 package handlers
 
 import (
-	"db"
 	"html"
 	"log"
-	"models"
 	"net/http"
 	"strings"
-	"utils"
+
+	"github.com/jonases/cybersecuryproject/db"
+	"github.com/jonases/cybersecuryproject/models"
+	"github.com/jonases/cybersecuryproject/utils"
 )
 
 // Register handles POST requests made from the Register page

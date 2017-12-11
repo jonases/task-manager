@@ -16,5 +16,5 @@ var (
 	UsersDB    = "users"
 	MessagesDB = "messages"
 
-	Path = ""
+	Path string
 )

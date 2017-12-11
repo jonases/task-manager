@@ -1,12 +1,13 @@
 package handlers
 
 import (
-	"db"
 	"html"
 	"log"
-	"models"
 	"net/http"
-	"utils"
+
+	"github.com/jonases/cybersecuryproject/db"
+	"github.com/jonases/cybersecuryproject/models"
+	"github.com/jonases/cybersecuryproject/utils"
 )
 
 // SendMessage handles POST requets made from the Contact page
