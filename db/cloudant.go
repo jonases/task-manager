@@ -84,11 +84,9 @@ func CreateDocument(data interface{}) error {
 	}
 
 	if DB.Name() == "users" || DB.Name() == "users_test" {
-		log.Println("Its users DB: ", DB.Name())
 		UsersDoc.Rev = rev
 		UsersDoc.ID = id
 	} else {
-		log.Println("Its NOT users DB: ", DB.Name())
 		MsgsDoc.Rev = rev
 		MsgsDoc.ID = id
 	}

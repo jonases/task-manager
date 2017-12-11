@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -24,11 +25,11 @@ func TestInitSetup(t *testing.T) {
 	// append "_test" to the database names
 	models.UsersDB += "_test"
 	models.MessagesDB += "_test"
+	models.Path = ""
+	log.SetFlags(log.LstdFlags | log.Lmicroseconds | log.Lshortfile)
 }
 
 func TestGetContactPage(t *testing.T) {
-	// returns the path, excluding the file name
-	models.Path = "./src/"
 
 	Get(t, "/contact", handlers.ServeContent, http.StatusOK, "")
 }
