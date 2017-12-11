@@ -66,7 +66,6 @@ func TestCleanUpDB(t *testing.T) {
 	db.DeleteDocument(db.MsgsDoc.ID, db.MsgsDoc.Rev)
 	db.CreateDBConnection(models.UsersDB)
 	db.DeleteDocument(db.UsersDoc.ID, db.UsersDoc.Rev)
-
 }
 
 // Get defines the GET requests, expecting the desired HTTP code and body
