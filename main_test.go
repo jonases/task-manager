@@ -25,12 +25,13 @@ func TestInitSetup(t *testing.T) {
 	// append "_test" to the database names
 	models.UsersDB += "_test"
 	models.MessagesDB += "_test"
+	// set the base path
 	models.Path = ""
+	// set up the logging output standard
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds | log.Lshortfile)
 }
 
 func TestGetContactPage(t *testing.T) {
-
 	Get(t, "/contact", handlers.ServeContent, http.StatusOK, "")
 }
 
@@ -64,6 +65,10 @@ func TestGetMessages(t *testing.T) {
 	Get(t, "/messages", handlers.ServeContent, http.StatusOK, "")
 }
 
+func TestLogout(t *testing.T) {
+	Get(t, "/logout", handlers.ServeContent, http.StatusFound, "")
+}
+
 func TestCleanUpDB(t *testing.T) {
 	db.DeleteDocument(db.MsgsDoc.ID, db.MsgsDoc.Rev)
 	db.CreateDBConnection(models.UsersDB)
@@ -78,6 +83,7 @@ func Get(t *testing.T, url string, hFunc http.HandlerFunc, expectedStatus int, e
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	// set cookie header if it exists
 	if cookie != nil {
 		req.AddCookie(cookie)
