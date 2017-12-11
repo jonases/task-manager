@@ -4,7 +4,7 @@ applications:
   instances: 1
   domain: mybluemix.net
   name: jonas-nci-cs-project
-  host: nciproject
+  host: csproject
   disk_quota: 1024M
-  command: bin/nciproject
-buildpack: https://github.com/cloudfoundry/go-buildpack.git
+  command: cybersecuryproject
+  buildpack: https://github.com/cloudfoundry/go-buildpack.git
