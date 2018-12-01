@@ -2,7 +2,7 @@
 all: test
 
 clean:
-	rm -f cybersecuryproject
+	rm -f task-manager
 
 install: prepare
 	godep go install

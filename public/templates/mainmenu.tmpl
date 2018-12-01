@@ -1,27 +1,18 @@
 {{define "mainmenu"}}
-<!--
-<form class="form-inline mt-2 mt-md-0 float-right" method="GET" action="/login">
-  <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Login</button>
-</form>
--->
 <header class="header clearfix">
   <nav>
     <ul class="nav nav-pills float-right">
       <li class="nav-item">
         <a class="nav-link{{if eq .Section "index"}} active{{end}}" href="/">Home</a>
       </li>
-      <li class="nav-item">
-        <a  class="nav-link{{if eq .Section "about"}} active{{end}}" href="/about">About</a>          
-      </li>
-      <li class="nav-item">
-        <a  class="nav-link{{if eq .Section "contact"}} active{{end}}" href="/contact">Contact</a>
-      </li>
+      {{if eq .AuthLevel "anon"}}
       <li>
         <a  class="nav-link{{if eq .Section "register"}} active{{end}}" href="/register">Register</a>
       </li>
-       {{if eq .AuthLevel "auth"}}
+      {{end}}
+      {{if eq .AuthLevel "auth"}}
       <li>
-        <a  class="nav-link{{if eq .Section "messages"}} active{{end}}" href="/messages">Messages</a>
+        <a  class="nav-link{{if eq .Section "todo"}} active{{end}}" href="/todo">To-Do's</a>
       </li>
       {{end}}
       <li>
@@ -36,6 +27,6 @@
     
   </nav>
   
-  <h3 class="text-muted">NCI Cyber Security</h3>
+  <h3 class="text-muted">Simple Task Manager</h3>
 </header>
 {{end}}

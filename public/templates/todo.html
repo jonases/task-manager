@@ -1,0 +1,228 @@
+{{template "header" .}}
+
+  <body>
+        <div class="container">
+          {{template "mainmenu" .}}
+          <div class="row">
+              <div class="col-md-12">
+                  <h4>To-Do list</h4>
+                  <div class="table-responsive">
+                  <div class="form-group">
+                  <div id="flash-container">
+                  {{range $fm := .flashes}}
+                    <div id="flash-message" class="alert alert-box-fixed0 alert-box-fixed alert-dismissible {{.Class}}" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    {{.Message}}</div>
+                  {{end}}
+              </div>
+
+                    <form role="form" method="post">
+                      <div class="form-group">
+                        <input class="form-control" placeholder="Your Task Name" name="task" type="text" id="task" maxlength="60" required/>
+                      </div>
+
+                      <div class="form-group">
+                        <input type="submit" id="addTask" value="Add" class="btn btn-primary" />
+                      </div>
+                      <input type="hidden" name="token" value="{{.token}}" id="token" />
+                    </form>
+                    
+                  </div>
+                      <h3>Tasks in progress</h3>
+
+                      <input type="text" id="search" onkeyup="searchTask()" placeholder="Find tasks">
+                      <table id="todo-table" class="table table-hover">
+
+                        <thead>
+                          <th>Name</th>
+                        </thead>
+
+                        <tbody>
+                          <!--<tr>
+                            <td width="65%"><a href="#" id="username" data-type="text" data-pk="1" data-title="Enter username" class="editable editable-click" style="display: inline;">superuser</a></td>
+                          </tr> -->
+                      
+                          {{range $todo := .todos}}
+                            {{ if eq .State "in-progress" }}
+                              <tr>
+                                <td>{{.Title}}</td>
+                                <td style="display:none;">{{.ID}}</td>
+                                <td style="display:none;">{{.Rev}}</td>
+                                <!--td>
+                                    <span class="table-remove glyphicon glyphicon-remove"></span>
+                                </td-->
+                                <!--td>
+                                  <button type="button" class="task-done btn btn-sm btn-default pull-right" title="Mark as done">
+                                    <span class="glyphicon glyphicon-ok"></span>
+                                  </button>
+                                </td-->
+                              </tr>
+                            {{end}}
+                          {{end}}
+                        </tbody>
+                      </table>
+
+                    </div>
+                    <div>
+                      <h3>Tasks Finished</h3>
+
+                      <table id="done-table" class="table table-hover">
+                          <thead>
+                              <th>Name</th>
+                          </thead>
+                        <tbody>
+                          <!-- <tr>
+                            <td width="65%"><a href="#" id="username" data-type="text" data-pk="1" data-title="Enter username" class="editable editable-click" style="display: inline;">superuser</a></td>
+                          </tr> -->
+                      
+                          {{range $todo := .todos}}
+                            {{ if eq .State "done" }}
+                              <tr>
+                                <td>{{.Title}}</td>
+                                <td style="display:none;">{{.ID}}</td>
+                                <td style="display:none;">{{.Rev}}</td>
+                                <td>
+                                  <button  type="button" class="table-remove btn btn-sm btn-default pull-right" title="Delete">
+                                    <span class="glyphicon glyphicon-trash" ></span>
+                                  </button>
+                                </td>
+                              </tr>
+                            {{end}}
+                          {{end}}
+                        </tbody>
+                      </table>
+              </div>
+            </div>
+          </div>
+          {{template "footer"}}
+        </div>
+    {{template "js"}}
+    <script>
+    $(document).ready(function () {
+
+      $('#todo-table').SetEditable({
+	      columnsEd: "0",
+        onEdit: function(e) { 
+          
+          var title=$(e).find('td:first').html();
+          var id=$(e).find('td:nth-child(2)').html();
+          var rev=$(e).find('td:nth-child(3)').html();
+          var tkn=$('input#token').val();
+
+          //$(e).parents('tr').detach();
+
+          $.ajax({ url: '/todo?token=' +tkn+ '&title='+ title+'&id='+ id+'&rev='+ rev + '&state=in-progress',
+                method: 'PUT' })
+                .fail(function () {
+                  alert('Failed to save, please try again.');
+          });
+        },
+        onBeforeDelete: function(e) {
+          var title=$(e).find('td:first').html();
+          var id=$(e).find('td:nth-child(2)').html();
+          var rev=$(e).find('td:nth-child(3)').html();
+          var tkn=$('input#token').val();
+
+          $.ajax({ url: '/todo?token=' +tkn+ '&title='+ title+'&id='+ id+'&rev='+ rev, 
+                  method: 'DELETE' })
+                  .fail(function () {
+                    alert('Failed to save, please try again.');
+          });
+        }
+    	});
+
+      
+
+      $('.table-remove').click(function () {
+        console.log("lalala");
+        var title=$(this).parents('tr').find('td:first').html();
+        var id=$(this).parents('tr').find('td:nth-child(2)').html();
+        var rev=$(this).parents('tr').find('td:nth-child(3)').html();
+        var tkn=$('input#token').val();
+
+        $(this).parents('tr').detach();
+
+        $.ajax({ url: '/todo?token=' +tkn+ '&title='+ title+'&id='+ id+'&rev='+ rev, 
+                method: 'DELETE' })
+                .fail(function () {
+                  alert('Failed to save, please try again.');
+        });
+
+      });
+
+      $('.task-done').click(function () {
+        var elem = $(this).parents('tr');
+        $(this).parents('tr').remove();
+
+        var title=elem.find('td:first').html();
+        var id=elem.find('td:nth-child(2)').html();
+        var rev=elem.find('td:nth-child(3)').html();
+        var tkn=$('input#token').val();
+
+
+        var htmlToAppend = '<tr>'+
+          '<td>'+title+'</td>'+
+          '<td style="display:none;">'+id+'</td>'+
+          '<td style="display:none;">'+rev+'</td>'+
+          '<td>'+
+            '<button  type="button" class="table-remove btn btn-sm btn-default pull-right" title="Delete">'+
+              '<span class="glyphicon glyphicon-trash" ></span>'+
+            '</button>'+
+          '</td>'+
+        '</tr>'
+
+        $("#done-table tbody").append(htmlToAppend);
+
+        $.ajax({ url: '/todo?token=' +tkn+ '&title='+ title+'&id='+ id+'&rev='+ rev + '&state=done',
+                method: 'PUT' })
+                .fail(function () {
+                  alert('Failed to save, please try again.');
+        });
+
+      });
+
+      /*
+      $('#addTask').click(function(){
+        var title = $('input#task').val();
+        var tkn=$('input#token').val();
+
+        var toAdd = '<tr><td>{{.Title}}</td><td style="display:none;">{{.ID}}</td><td style="display:none;">{{.Rev}}</td><td><span class="table-remove glyphicon glyphicon-remove"></span></td><td><span class="table-done glyphicon glyphicon-ok"></span></td></tr>'
+
+        $('#todo-table tr:last').after('<tr>'+title+'</tr>');
+
+        $.ajax({ url: '/todo?token=' +tkn+ '&task='+ title,
+                method: 'POST' })
+                .fail(function () {
+                  alert('Failed to add, please try again.');
+        });
+
+      });
+      */
+
+    });
+
+    function searchTask() {
+      // Declare variables
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("search");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("todo-table");
+      tr = table.getElementsByTagName("tr");
+
+      // Loop through all table rows, and hide those who don't match the search query
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+    </script>
+    <script src="js/bootstable.js"></script>
+  </body>
+</html>

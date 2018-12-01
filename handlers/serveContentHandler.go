@@ -5,22 +5,39 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/jonases/cybersecuryproject/db"
-	"github.com/jonases/cybersecuryproject/models"
-	"github.com/jonases/cybersecuryproject/utils"
+	"github.com/jonases/task-manager/shared"
 )
 
 // ServeContent retrieves and serves the HTML pages
 func ServeContent(res http.ResponseWriter, req *http.Request) {
 	//log.Println("Invoking serveContent")
-	session := utils.NewSession(req)
+	session := shared.NewSession(req)
+
+	if req.URL.EscapedPath() == "/register" {
+
+		// if user is authenticated, do not let to register
+		if session.Values["email"] != nil {
+			session.AddFlash(shared.Flash{Message: "Can't create an account while logged in.", Class: shared.FlashNotice})
+			err := session.Save(req, res)
+			if err != nil {
+				log.Println(err)
+				http.Error(res, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				return
+			}
+			http.Redirect(res, req, "/", http.StatusFound)
+			return
+		}
+
+	}
 
 	if req.URL.EscapedPath() == "/logout" {
 
 		// if user is authenticated
 		if session.Values["email"] != nil {
-			utils.Empty(session)
-			session.AddFlash(utils.Flash{Message: "Successfully logged out!", Class: utils.FlashNotice})
+			shared.Empty(session)
+			log.Println("sess:", session.Values)
+			log.Println("in here")
+			session.AddFlash(shared.Flash{Message: "Successfully logged out!", Class: shared.FlashNotice})
 			err := session.Save(req, res)
 			if err != nil {
 				log.Println(err)
@@ -28,6 +45,8 @@ func ServeContent(res http.ResponseWriter, req *http.Request) {
 				return
 			}
 		}
+
+		log.Println("sess:", session.Values)
 
 		http.Redirect(res, req, "/", http.StatusFound)
 		return
@@ -42,37 +61,46 @@ func ServeContent(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	if req.URL.EscapedPath() == "/messages" {
+	if req.URL.EscapedPath() == "/todo" {
 
-		// if user is not authenticated, do not allow access to "/messages" endpoint
+		// if user is not authenticated, do not allow access to "/todo" endpoint
 		if session.Values["email"] == nil {
 			http.Redirect(res, req, "/", http.StatusFound)
 			return
 		}
-		// creates db connection to "messages" document
-		db.CreateDBConnection(models.MessagesDB)
-		// get all content in the "messages" document
-		err := db.GetAllDocs()
+
+		log.Println("session:", session.Values)
+
+		// creates db connection to "tasks" document
+		shared.CreateDBConnection(shared.TasksDocumentName)
+
+		// get all content in the "tasks" document
+		todoList, err := shared.QueryByFieldAndValue("email", session.Values["email"].(string))
 		if err != nil {
 			log.Println(err)
 			http.Error(res, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
 
-		var msgSlice []models.MsgData
-		var msg models.MsgData
+		// log.Println("todoList=\n", fmt.Sprintf("%+v", todoList))
 
-		for k := range db.Alldocs.Rows {
-			doc := db.Alldocs.Rows[k]
+		var todoSlice []shared.Todo
+		var todo shared.Todo
 
-			msg.Email = html.UnescapeString(doc["doc"].(map[string]interface{})["email"].(string))
-			msg.Message = html.UnescapeString(doc["doc"].(map[string]interface{})["msg"].(string))
-			msg.Name = html.UnescapeString(doc["doc"].(map[string]interface{})["name"].(string))
-			msgSlice = append(msgSlice, msg)
+		for _, v := range todoList {
+
+			val := v.(map[string]interface{})
+			todo.Title = html.UnescapeString(val["title"].(string))
+			todo.State = val["state"].(string)
+			todo.ID = val["_id"].(string)
+			todo.Rev = val["_rev"].(string)
+
+			todoSlice = append(todoSlice, todo)
 		}
 
-		session.Values["messages"] = true
-		utils.Messages = msgSlice
+		session.Values["todos"] = true
+		shared.Todos = todoSlice
+
 		err = session.Save(req, res)
 		if err != nil {
 			log.Println(err)
@@ -81,6 +109,6 @@ func ServeContent(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	utils.RenderPage(res, req)
+	shared.RenderPage(res, req)
 
 }

@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/jonases/cybersecuryproject/models"
+	"github.com/jonases/task-manager/shared"
 )
 
 // ServeResource retrieves and serves the static pages such as .js and .css files
@@ -17,9 +17,10 @@ func ServeResource(res http.ResponseWriter, req *http.Request) {
 	// return method not allowed if attempt to use a method different than GET
 	if req.Method != http.MethodGet {
 		res.WriteHeader(http.StatusMethodNotAllowed)
+		return
 	}
 
-	path := models.Path + models.Public + "static" + req.URL.Path
+	path := shared.Path + shared.Public + "static" + req.URL.Path
 
 	var contentType string
 
@@ -42,8 +43,8 @@ func ServeResource(res http.ResponseWriter, req *http.Request) {
 	res.Header().Add("Content-Type", contentType)
 
 	buff := bufio.NewReader(file)
-	_, err = buff.WriteTo(res)
 
+	_, err = buff.WriteTo(res)
 	if err != nil {
 		log.Fatalln(err)
 	}
