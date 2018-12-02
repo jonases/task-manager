@@ -33,7 +33,8 @@ func main() {
 	}
 
 	// returns the path, excluding the file name
-	shared.Path = filepath.Dir(ex) + "/"
+	// shared.Path = filepath.Dir(ex) + "/"
+	shared.Path = filepath.Dir(ex) + "/../"
 
 	// set up the routes for the HTTP handle
 	router := mux.NewRouter()
@@ -61,7 +62,7 @@ func main() {
 
 	srv := &http.Server{
 		Handler:      csrfProtection,
-		Addr:         ":8001",
+		Addr:         ":8080",
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}

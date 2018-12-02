@@ -2,8 +2,12 @@ applications:
 - path: .
   memory: 128M
   instances: 1
-  domain: mybluemix.net
+  routes: 
+  - route: task-manager-cloud.eu-gb.mybluemix.net/
+  - route: task-manager-cloud.eu-gb.mybluemix.net/todo
+  - route: task-manager-cloud.eu-gb.mybluemix.net/register
+  - route: task-manager-cloud.eu-gb.mybluemix.net/login
+  - route: task-manager-cloud.eu-gb.mybluemix.net/logout
   name: task-manager-cloud
-  host: task-manager-cloud
   disk_quota: 1024M
   command: task-manager
